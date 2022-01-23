@@ -14,6 +14,9 @@ public class PlayerScript : MonoBehaviour
     private Vector2 input;
     private Vector3 moveDirection;
 
+    // Animation
+    private Animator anim;
+
     // Gameplay
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float dashForce = 15f;
@@ -28,7 +31,7 @@ public class PlayerScript : MonoBehaviour
     // FX and UI
     [SerializeField] private LayerMask defaultLayer;
     [SerializeField] private LayerMask transparentLayer;
-    [SerializeField] private Light light;
+    [SerializeField] private Light playerLight;
     [SerializeField] private GameObject playerGFX;
     [SerializeField] private CameraShake cameraFX;
     [SerializeField] private ParticleSystem deathFX;
@@ -60,7 +63,7 @@ public class PlayerScript : MonoBehaviour
         Cursor.SetCursor(cursor, hotspot, CursorMode.Auto);
         Cursor.lockState = CursorLockMode.Confined;
 
-        gameObject.layer = defaultLayer;
+        anim = GetComponentInChildren<Animator>();
         controller = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
 
@@ -68,7 +71,8 @@ public class PlayerScript : MonoBehaviour
         dash = playerInput.actions["Dash"];
         escape = playerInput.actions["Escape"];
 
-        defaultColor = light.color;
+        defaultColor = playerLight.color;
+        gameObject.layer = defaultLayer;
     }
 
 
@@ -89,6 +93,8 @@ public class PlayerScript : MonoBehaviour
         if (moveDirection == Vector3.zero) { return; }
 
         controller.Move(moveDirection * moveSpeed * Time.deltaTime);
+        
+        anim.SetFloat("Speed", input.y);
 
         if (transform.position.y == 1f) { return; }
 
@@ -165,12 +171,12 @@ public class PlayerScript : MonoBehaviour
         gameObject.tag = "Untagged";
         for (int i = 0; i < 3; i++)
         {
-            light.color = Color.black;
+            playerLight.color = Color.black;
             yield return new WaitForSeconds(0.2f);
-            light.color = Color.red;
+            playerLight.color = Color.red;
             yield return new WaitForSeconds(0.2f);
         }
-        light.color = defaultColor;
+        playerLight.color = defaultColor;
         gameObject.layer = defaultLayer;
         gameObject.tag = "Player";
     }
