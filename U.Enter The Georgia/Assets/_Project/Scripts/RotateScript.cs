@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class RotateScript : MonoBehaviour
 {
+    private PlayerScript playerScript;
     private PlayerInput playerInput;
     private InputAction mouse;
     private Camera cam;
@@ -10,6 +11,7 @@ public class RotateScript : MonoBehaviour
 
     void Awake()
     {
+        playerScript = GetComponent<PlayerScript>();
         cam = Camera.main;
         playerInput = gameObject.GetComponentInParent<PlayerInput>();
         mouse = playerInput.actions["Mouse"];
@@ -17,6 +19,8 @@ public class RotateScript : MonoBehaviour
 
     private void Update()
     {
+        if (playerScript.Dashing) return;
+
         RotateTowardsMouse();
     }
 
@@ -25,9 +29,10 @@ public class RotateScript : MonoBehaviour
         Ray ray = cam.ScreenPointToRay(mouse.ReadValue<Vector2>());
         if (Physics.Raycast(ray, out RaycastHit hitInfo, mouseRayDisatnce))
         {
-            var target = hitInfo.point;
+            var target = hitInfo.point - transform.position;
             target.y = transform.position.y;
-            transform.LookAt(target);
+            target.Normalize();
+            transform.forward = target;
         }
     }
 }

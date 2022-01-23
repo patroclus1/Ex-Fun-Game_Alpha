@@ -24,6 +24,15 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private int health;
 
     private bool isDashing;
+    float velocityZ;
+    float velocityX;
+
+    public bool Dashing
+    {
+        get { return isDashing; }
+    }
+
+
     private bool isPlayerAlive = true;
 
     private Vector3 persistantHeight;
@@ -85,18 +94,26 @@ public class PlayerScript : MonoBehaviour
 
     private void Move()
     {
-        if (isDashing) { return; }
+        if (isDashing) return;
 
         input = move.ReadValue<Vector2>();
         moveDirection = new Vector3(input.x, 0, input.y);
 
-        if (moveDirection == Vector3.zero) { return; }
+        if (moveDirection.magnitude > 0) 
+        {
+            moveDirection.Normalize();
+            controller.Move(moveDirection * moveSpeed * Time.deltaTime);
+        }
 
-        controller.Move(moveDirection * moveSpeed * Time.deltaTime);
-        
-        anim.SetFloat("Speed", input.y);
+        // Animating
+        velocityZ = Vector3.Dot(moveDirection.normalized, transform.forward);
+        velocityX = Vector3.Dot(moveDirection.normalized, transform.right);
 
-        if (transform.position.y == 1f) { return; }
+        anim.SetFloat("Vertical", velocityZ, 0.1f, Time.deltaTime);
+        anim.SetFloat("Horizontal", velocityX, 0.1f, Time.deltaTime);
+
+        // Patching height
+        if (transform.position.y == 1f) return;
 
         PersistHeight();
     }
@@ -109,10 +126,13 @@ public class PlayerScript : MonoBehaviour
 
     private void Dash()
     {
-        if (isDashing) { return; }
+        if (isDashing) return;
 
         if (dash.triggered)
         {
+            velocityZ = Vector3.Dot(moveDirection.normalized, transform.forward);
+            anim.SetTrigger("Roll");
+            anim.SetFloat("RollDirection", velocityZ);
             StartCoroutine(StartDash());
             StartCoroutine(cameraFX.cameraShake(0.1f, 0.04f));
         }

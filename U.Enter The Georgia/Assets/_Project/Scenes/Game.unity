@@ -2662,6 +2662,7 @@ GameObject:
   - component: {fileID: 308210701844838309}
   - component: {fileID: 378956708047379669}
   - component: {fileID: 85764168744396163}
+  - component: {fileID: 85764168744396164}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2680,7 +2681,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 6ff98783d10689e4199627949324d20f, type: 3}
   m_Controller: {fileID: 9100000, guid: 7da13042083cb4b47b91814afa97332f, type: 2}
-  m_CullingMode: 0
+  m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -2688,6 +2689,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &85764168744396164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85764168744396162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cade55479b9d2846be54cdc730a07b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &297165223295503745
 GameObject:
   m_ObjectHideFlags: 0
@@ -3168,18 +3181,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3284854364470760704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3425361755152645923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2cade55479b9d2846be54cdc730a07b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &3425361755152540289
 Transform:
   m_ObjectHideFlags: 0
@@ -4915,7 +4916,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3425361755152540355}
-  - component: {fileID: 3284854364470760704}
   m_Layer: 0
   m_Name: PlayerGFX
   m_TagString: Untagged
@@ -6451,7 +6451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 669d16c5bfe8215429256f786f3de755, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  moveSpeed: 10
   dashForce: 20
   dashTime: 0.25
   health: 100
