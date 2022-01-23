@@ -194,8 +194,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   muzzlePos: {fileID: 7170471149039895358}
   bulletPrefab: {fileID: 1047674625783498852, guid: 67b5184e431e1c7488deff2541024fb4, type: 3}
-  fireRate: 4
-  moveSpeed: 20
+  shootInterval: 2
+  moveSpeed: 25
   isCollidingWithPlayer: 0
   playerTag: Player
   bulletTag: rBullet

@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  bulletForce: 50
+  bulletForce: 100
   lifetime: 4
   damage: 0
   bulletHitFX: {fileID: 3863965851147537078, guid: fda90b93313f65a418a8de9d077c4152, type: 3}

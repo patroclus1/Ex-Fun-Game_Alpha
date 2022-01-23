@@ -8,7 +8,7 @@ public class EnemyScript : MonoBehaviour
 
     [SerializeField] private Transform muzzlePos;
     [SerializeField] private EnemyBulletScript bulletPrefab;
-    [SerializeField] private float fireRate = 4f;
+    [SerializeField] private float shootInterval = 4f;
 
     [SerializeField] private float moveSpeed;
     [SerializeField] private bool isCollidingWithPlayer;
@@ -21,6 +21,7 @@ public class EnemyScript : MonoBehaviour
     private MeshRenderer meshR;
     private float defaultSpeed;
 
+    private Vector3 persistantHeight;
     private Rigidbody rb;
 
     public int enemyHealth
@@ -52,6 +53,13 @@ public class EnemyScript : MonoBehaviour
         if (isCollidingWithPlayer) { return; }
 
         FollowTarget();
+        PersistHeight();
+    }
+
+    private void PersistHeight()
+    {
+        persistantHeight = new Vector3(transform.position.x, 1f, transform.position.z);
+        transform.position = persistantHeight;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -61,7 +69,7 @@ public class EnemyScript : MonoBehaviour
             StopFollowOnCollision();
             player.TakeDamage(damage);
         }
-        else if (collision.collider.CompareTag(bulletTag) && Health != 0)
+        else if (collision.collider.CompareTag(bulletTag))
         {
             HandleBulletHitFX();
 
@@ -87,9 +95,9 @@ public class EnemyScript : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(fireRate);
             var spawnedBullet = Instantiate(bulletPrefab, muzzlePos.position, muzzlePos.rotation);
             spawnedBullet.Initialize(player);
+            yield return new WaitForSeconds(shootInterval);
         }
     }
 
@@ -101,13 +109,18 @@ public class EnemyScript : MonoBehaviour
 
     private void DamageOrDeath()
     {
-        if (Health != 0) { Health = Health - 50; }
-
-        gameObject.SetActive(false);
-        Destroy(gameObject, 2);
-        spawner.EnemyKilled();
-        var particles = Instantiate(deathFX, transform.position, Quaternion.identity);
-        Destroy(particles.gameObject, 2);
+        if (Health > 0) 
+        { 
+            Health = Health - 50; 
+        }
+        else if (Health <= 0)
+        {
+            gameObject.SetActive(false);
+            Destroy(gameObject, 2);
+            spawner.EnemyKilled();
+            var particles = Instantiate(deathFX, transform.position, Quaternion.identity);
+            Destroy(particles.gameObject, 2);
+        }
     }
 
     private void HandleBulletHitFX()

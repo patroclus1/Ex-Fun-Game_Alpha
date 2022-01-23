@@ -30,7 +30,7 @@ public class RotateScript : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hitInfo, mouseRayDisatnce))
         {
             var target = hitInfo.point - transform.position;
-            target.y = transform.position.y;
+            target.y = 0;
             target.Normalize();
             transform.forward = target;
         }
