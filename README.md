@@ -25,6 +25,8 @@ Follow for updates.
 	With the spare time i have for development 
 	i just wanted to go through the full
 	cycle of developing a game.
+	
+<br/>
 
 ## P.S.
 	As a post-release goal i plan to refactor the code.
