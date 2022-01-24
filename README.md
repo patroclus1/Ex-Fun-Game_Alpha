@@ -25,3 +25,12 @@ Follow for updates.
 	With the spare time i have for development 
 	i just wanted to go through the full
 	cycle of developing a game.
+
+## P.S.
+	As a post-release goal i plan to refactor the code.
+	Because of the time limit of the jam i
+	didn`t put enough effort writing 
+	a clean reusable code. So 
+	follow this repo to see 
+	refactoring
+	results
