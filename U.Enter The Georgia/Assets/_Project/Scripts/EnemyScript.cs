@@ -10,19 +10,36 @@ public class EnemyScript : MonoBehaviour
     [SerializeField] private EnemyBulletScript bulletPrefab;
     [SerializeField] private float shootInterval = 4f;
 
-    [SerializeField] private float moveSpeed;
+    [SerializeField] private float moveSpeed = 25f;
     [SerializeField] private bool isCollidingWithPlayer;
     [SerializeField] private string playerTag = "Player";
     [SerializeField] private string bulletTag = "rBullet";
     [SerializeField] private int Health = 100;
     [SerializeField] private int damage;
     [SerializeField] private ParticleSystem deathFX;
+    [SerializeField] private AudioClip shootClip;
     [SerializeField] private GameObject bulletHitFx;
     private MeshRenderer meshR;
     private float defaultSpeed;
 
     private Vector3 persistantHeight;
     private Rigidbody rb;
+
+    public float SetMoveSpeed
+    {
+        set { moveSpeed = value; }
+    }
+
+    public float GetMoveSpeed
+    {
+        get { return moveSpeed; }
+    }
+
+    public float SetShootInterval
+    {
+        set { shootInterval = value; }
+    }
+
 
     public int enemyHealth
     {
@@ -33,6 +50,7 @@ public class EnemyScript : MonoBehaviour
 
     void Awake()
     {
+        persistantHeight = transform.position;
         defaultSpeed = moveSpeed;
         meshR = GetComponent<MeshRenderer>();
         rb = GetComponent<Rigidbody>();
@@ -58,8 +76,7 @@ public class EnemyScript : MonoBehaviour
 
     private void PersistHeight()
     {
-        persistantHeight = new Vector3(transform.position.x, 1f, transform.position.z);
-        transform.position = persistantHeight;
+        transform.position = new Vector3(transform.position.x, persistantHeight.y, transform.position.z);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -95,9 +112,10 @@ public class EnemyScript : MonoBehaviour
     {
         while (true)
         {
+            yield return new WaitForSeconds(shootInterval);
             var spawnedBullet = Instantiate(bulletPrefab, muzzlePos.position, muzzlePos.rotation);
             spawnedBullet.Initialize(player);
-            yield return new WaitForSeconds(shootInterval);
+            AudioSource.PlayClipAtPoint(shootClip, transform.position);
         }
     }
 

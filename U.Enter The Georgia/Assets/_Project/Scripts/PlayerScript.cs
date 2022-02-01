@@ -44,10 +44,11 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private GameObject playerGFX;
     [SerializeField] private CameraShake cameraFX;
     [SerializeField] private ParticleSystem deathFX;
+                     private AudioSource ouch;
 
-    [SerializeField] private Texture2D cursor;
     [SerializeField] private GameObject deathScreen;
     [SerializeField] private GameObject menuButtonScreen;
+    [SerializeField] private GameObject victoryScreen;
     private Color defaultColor;
 
     public int getHealth { get => health; }
@@ -68,9 +69,8 @@ public class PlayerScript : MonoBehaviour
         deathScreen.SetActive(false);
         menuButtonScreen.SetActive(false);
 
-        Vector2 hotspot = new Vector2(cursor.width/2, cursor.height/2);
-        Cursor.SetCursor(cursor, hotspot, CursorMode.Auto);
         Cursor.lockState = CursorLockMode.Confined;
+        ouch = GetComponent<AudioSource>();
 
         anim = GetComponentInChildren<Animator>();
         controller = GetComponent<CharacterController>();
@@ -159,6 +159,7 @@ public class PlayerScript : MonoBehaviour
         {
             StartCoroutine(StartAlphaFlicker());
             health -= dmg;
+            ouch.Play();
         }
         if (health <= 0)
         {
@@ -203,7 +204,7 @@ public class PlayerScript : MonoBehaviour
 
     private void OpenMenuOnEscape()
     {
-        if (escape.triggered && !menuButtonScreen.activeInHierarchy)
+        if (escape.triggered && !menuButtonScreen.activeInHierarchy && !victoryScreen.activeInHierarchy)
         {
             menuButtonScreen.SetActive(true);
         }

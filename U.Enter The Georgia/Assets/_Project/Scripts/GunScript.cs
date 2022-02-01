@@ -36,6 +36,14 @@ public class GunScript : MonoBehaviour
 
     #endregion
 
+    #region Audio
+
+    [SerializeField] private AudioSource shootSound;
+    [SerializeField] private AudioClip shootClip;
+
+    #endregion
+
+
     void Awake()
     {
         playerInput = player.GetComponent<PlayerInput>();
@@ -75,6 +83,8 @@ public class GunScript : MonoBehaviour
     {
         var shootParticles = Instantiate(shootFX, muzzlePos.position, muzzlePos.rotation);
         Destroy(shootParticles.gameObject, 2);
+
+        shootSound.PlayOneShot(shootClip, 0.5f);
 
         StartCoroutine(cameraFX.cameraShake(0.15f, 0.05f));
         hud.UpdateBulletCount();

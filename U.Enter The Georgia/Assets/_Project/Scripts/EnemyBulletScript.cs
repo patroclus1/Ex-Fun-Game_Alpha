@@ -37,6 +37,11 @@ public class EnemyBulletScript : MonoBehaviour
             BulletHitFX();
             Destroy(gameObject);
         }
+        else if (!other.CompareTag("Enemy"))
+        {
+            BulletHitFX();
+            Destroy(gameObject);
+        }
     }
 
     private void BulletHitFX()
