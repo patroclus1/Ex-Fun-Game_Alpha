@@ -3,9 +3,6 @@ A test version of my submission to "Finally Finish Something 2022" game jam.\
 Thank you for checking out this page. \
 Follow for updates.
 <br/>
-
-<iframe frameborder="0" src="https://itch.io/embed/1379832?linkback=true&amp;border_width=5&amp;bg_color=ab59c6&amp;fg_color=ffffff&amp;link_color=fadd66&amp;border_color=b06dda" width="560" height="175"><a href="https://ideen.itch.io/capsule-twins">A game about shooting by iDeen</a></iframe>
-
 <br/>
 <br/>
 
