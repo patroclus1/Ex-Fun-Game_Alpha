@@ -1,4 +1,4 @@
-# Ex Fun Game (Alpha version)
+# Ex Fun Game (Prototype build)
 My submission to "Finally Finish Something 2022" game jam.\
 Thank you for checking out this page. \
 Follow for updates.
@@ -17,7 +17,7 @@ Follow for updates.
 	There is a very simple idea and realization behind this game yet the focus 
 	is to make it feel like the game of its genre. Particles and 
 	feedback are not polished but the main goal 
-	is to make everything work together.
+	was "make everything work together".
 	
 <br/>
 
