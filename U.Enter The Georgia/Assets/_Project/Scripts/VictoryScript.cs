@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class VictoryScript : MonoBehaviour
 {
-    [SerializeField] private GameObject victoryScreen;
+    [SerializeField] private GameObject _victoryScreen;
 
     public void Victory()
     {
         if (EnemySpawner.IsGameBeaten)
         {
-            victoryScreen.SetActive(true);
+            _victoryScreen.SetActive(true);
         }
     }
 }

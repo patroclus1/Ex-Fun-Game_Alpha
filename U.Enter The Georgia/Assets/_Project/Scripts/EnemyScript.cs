@@ -3,90 +3,92 @@ using UnityEngine;
 
 public class EnemyScript : MonoBehaviour
 {
-    private PlayerScript player;
-    private EnemySpawner spawner;
+    private PlayerScript _player;
+    private EnemySpawner _spawner;
 
-    [SerializeField] private Transform muzzlePos;
-    [SerializeField] private EnemyBulletScript bulletPrefab;
-    [SerializeField] private float shootInterval = 4f;
+    [SerializeField] private Transform _muzzlePosition;
+    [SerializeField] private EnemyBulletScript _bulletPrefab;
+    [SerializeField] private float _fireInterval = 4f;
 
-    [SerializeField] private float moveSpeed = 25f;
-    [SerializeField] private bool isCollidingWithPlayer;
-    [SerializeField] private string playerTag = "Player";
-    [SerializeField] private string bulletTag = "rBullet";
-    [SerializeField] private int Health = 100;
-    [SerializeField] private int damage;
-    [SerializeField] private ParticleSystem deathFX;
-    [SerializeField] private AudioClip shootClip;
-    [SerializeField] private GameObject bulletHitFx;
-    private MeshRenderer meshR;
-    private float defaultSpeed;
+    [SerializeField] private float _moveSpeed = 25f;
+    [SerializeField] private bool _isCollidingWithPlayer;
+    [SerializeField] private string _playerTag = "Player";
+    [SerializeField] private string _bulletTag = "rBullet";
+    [SerializeField] private int _health = 100;
+    [SerializeField] private int _damage;
+    [SerializeField] private ParticleSystem _deathFX;
+    [SerializeField] private AudioClip _shootSound;
+    [SerializeField] private GameObject _bulletHitFx;
+    private MeshRenderer _meshRenderer;
+    private float _defaultMoveSpeed;
 
-    private Vector3 persistantHeight;
-    private Rigidbody rb;
+    private Vector3 _persistantHeight;
+    private Rigidbody _rb;
+    private Transform _transform;
 
     public float SetMoveSpeed
     {
-        set { moveSpeed = value; }
+        set { _moveSpeed = value; }
     }
 
     public float GetMoveSpeed
     {
-        get { return moveSpeed; }
+        get { return _moveSpeed; }
     }
 
     public float SetShootInterval
     {
-        set { shootInterval = value; }
+        set { _fireInterval = value; }
     }
 
-
-    public int enemyHealth
+    public int EnemyHealth
     {
-        get { return Health; }
-        set { Health = value; }
+        get { return _health; }
+        set { _health = value; }
     }
 
 
     void Awake()
     {
-        persistantHeight = transform.position;
-        defaultSpeed = moveSpeed;
-        meshR = GetComponent<MeshRenderer>();
-        rb = GetComponent<Rigidbody>();
+        _persistantHeight = transform.position;
+        _defaultMoveSpeed = _moveSpeed;
+        _meshRenderer = GetComponent<MeshRenderer>();
+        _transform = GetComponent<Transform>();
+        _rb = GetComponent<Rigidbody>();
 
         StartCoroutine(ShootRoutine());
     }
 
     private void Update()
     {
-        if (!player.isAlive) { return; }
-        transform.LookAt(player.transform.position);
+        if (!_player.IsPlayerAlive) { return; }
+        
+        _transform.LookAt(_player.transform.position);
     }
 
     private void FixedUpdate()
     {
-        if (!player.isAlive) { return; }
+        if (!_player.IsPlayerAlive) { return; }
 
-        if (isCollidingWithPlayer) { return; }
+        if (_isCollidingWithPlayer) { return; }
 
         FollowTarget();
-        PersistHeight();
+        //PersistHeight();
     }
 
     private void PersistHeight()
     {
-        transform.position = new Vector3(transform.position.x, persistantHeight.y, transform.position.z);
+        _transform.position = new Vector3(_transform.position.x, _persistantHeight.y, _transform.position.z);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.CompareTag(playerTag))
+        if (collision.collider.CompareTag(_playerTag))
         {
             StopFollowOnCollision();
-            player.TakeDamage(damage);
+            _player.TakeDamage(_damage);
         }
-        else if (collision.collider.CompareTag(bulletTag))
+        else if (collision.collider.CompareTag(_bulletTag))
         {
             HandleBulletHitFX();
 
@@ -96,54 +98,54 @@ public class EnemyScript : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.collider.CompareTag(playerTag))
+        if (collision.collider.CompareTag(_playerTag))
         {
-            isCollidingWithPlayer = false;
-            moveSpeed = defaultSpeed;
+            _isCollidingWithPlayer = false;
+            _moveSpeed = _defaultMoveSpeed;
         }
     }
 
     private void FollowTarget()
     {
-        rb.AddForce(transform.forward * moveSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
+        _rb.AddForce(_transform.forward * _moveSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
     }
 
     private IEnumerator ShootRoutine()
     {
         while (true)
         {
-            yield return new WaitForSeconds(shootInterval);
-            var spawnedBullet = Instantiate(bulletPrefab, muzzlePos.position, muzzlePos.rotation);
-            spawnedBullet.Initialize(player);
-            AudioSource.PlayClipAtPoint(shootClip, transform.position);
+            yield return new WaitForSeconds(_fireInterval);
+            var spawnedBullet = Instantiate(_bulletPrefab, _muzzlePosition.position, _muzzlePosition.rotation);
+            spawnedBullet.Initialize(_player);
+            AudioSource.PlayClipAtPoint(_shootSound, _transform.position);
         }
     }
 
     private void StopFollowOnCollision()
     {
-        isCollidingWithPlayer = true;
-        moveSpeed = 0;
+        _isCollidingWithPlayer = true;
+        _moveSpeed = 0;
     }
 
     private void DamageOrDeath()
     {
-        if (Health > 0) 
+        if (_health > 0) 
         { 
-            Health = Health - 50; 
+            _health = _health - 50; 
         }
-        else if (Health <= 0)
+        else if (_health <= 0)
         {
             gameObject.SetActive(false);
             Destroy(gameObject, 2);
-            spawner.EnemyKilled();
-            var particles = Instantiate(deathFX, transform.position, Quaternion.identity);
+            _spawner.EnemyKilled();
+            var particles = Instantiate(_deathFX, _transform.position, Quaternion.identity);
             Destroy(particles.gameObject, 2);
         }
     }
 
     private void HandleBulletHitFX()
     {
-        var spawnedFX = Instantiate(bulletHitFx, transform.position, transform.rotation);
+        var spawnedFX = Instantiate(_bulletHitFx, _transform.position, transform.rotation);
         Destroy(spawnedFX.gameObject, 2);
 
         StartCoroutine(ColorFlicker());
@@ -151,17 +153,17 @@ public class EnemyScript : MonoBehaviour
 
     public void Initialize(PlayerScript playerPos, EnemySpawner spawner)
     {
-        player = playerPos;
-        this.spawner = spawner;
+        _player = playerPos;
+        this._spawner = spawner;
     }
 
     private IEnumerator ColorFlicker()
     {
         for (int i = 0; i < 3; i++)
         {
-            meshR.material.color = Color.white;
+            _meshRenderer.material.color = Color.white;
             yield return new WaitForSeconds(0.2f);
-            meshR.material.color = Color.black;
+            _meshRenderer.material.color = Color.black;
             yield return new WaitForSeconds(0.2f);
         }
     }

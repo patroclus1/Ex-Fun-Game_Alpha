@@ -5,83 +5,85 @@ using System.Collections;
 public class PlayerScript : MonoBehaviour
 {
     // Controls
-    private CharacterController controller;
-    private PlayerInput playerInput;
-    private InputAction move;
-    private InputAction dash;
-    private InputAction escape;
+    private Transform _transform;
+    private CharacterController _controller;
+    private PlayerInput _playerInput;
+    private InputAction _move;
+    private InputAction _dash;
+    private InputAction _escape;
 
-    private Vector2 input;
-    private Vector3 moveDirection;
+    private Vector2 _input;
+    private Vector3 _moveDirection;
 
     // Animation
-    private Animator anim;
+    private Animator _anim;
 
     // Gameplay
-    [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float dashForce = 15f;
-    [SerializeField] private float dashTime = 0.25f;
-    [SerializeField] private int health;
+    [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _dashForce = 15f;
+    [SerializeField] private float _dashTime = 0.25f;
+    [SerializeField] private int _health;
 
-    private bool isDashing;
-    float velocityZ;
-    float velocityX;
+    private bool _isDashing;
+    private float _velocityZ;
+    private float _velocityX;
+
+
+    private bool _isPlayerAlive = true;
+
+    private Vector3 _persistantHeight;
+
+    // FX and UI
+    [SerializeField] private LayerMask _defaultLayer;
+    [SerializeField] private LayerMask _invincibleLayer;
+    [SerializeField] private Light _playerLight;
+    [SerializeField] private GameObject _playerGFX;
+    [SerializeField] private CameraShake _cameraFX;
+    [SerializeField] private ParticleSystem _deathFX;
+                     private AudioSource _hitSound;
+
+    [SerializeField] private GameObject _deathUI;
+    [SerializeField] private GameObject _pauseUI;
+    [SerializeField] private GameObject _victoryUI;
+                     private Color _defaultColor;
 
     public bool Dashing
     {
-        get { return isDashing; }
+        get { return _isDashing; }
     }
 
+    public int Health { get => _health; }
 
-    private bool isPlayerAlive = true;
-
-    private Vector3 persistantHeight;
-
-    // FX and UI
-    [SerializeField] private LayerMask defaultLayer;
-    [SerializeField] private LayerMask transparentLayer;
-    [SerializeField] private Light playerLight;
-    [SerializeField] private GameObject playerGFX;
-    [SerializeField] private CameraShake cameraFX;
-    [SerializeField] private ParticleSystem deathFX;
-                     private AudioSource ouch;
-
-    [SerializeField] private GameObject deathScreen;
-    [SerializeField] private GameObject menuButtonScreen;
-    [SerializeField] private GameObject victoryScreen;
-    private Color defaultColor;
-
-    public int getHealth { get => health; }
-
-    public bool isAlive
+    public bool IsPlayerAlive
     {
-        get { return isPlayerAlive; }
+        get { return _isPlayerAlive; }
     }
 
-    public bool setLife
+    public bool ReportPlayerDeath
     {
-        set { isPlayerAlive = value; }
+        set { _isPlayerAlive = value; }
     }
 
 
     void Awake()
     {
-        deathScreen.SetActive(false);
-        menuButtonScreen.SetActive(false);
+        _deathUI.SetActive(false);
+        _pauseUI.SetActive(false);
 
         Cursor.lockState = CursorLockMode.Confined;
-        ouch = GetComponent<AudioSource>();
+        _hitSound = GetComponent<AudioSource>();
 
-        anim = GetComponentInChildren<Animator>();
-        controller = GetComponent<CharacterController>();
-        playerInput = GetComponent<PlayerInput>();
+        _transform = GetComponent<Transform>();
+        _anim = GetComponentInChildren<Animator>();
+        _controller = GetComponent<CharacterController>();
+        _playerInput = GetComponent<PlayerInput>();
 
-        move = playerInput.actions["Move"];
-        dash = playerInput.actions["Dash"];
-        escape = playerInput.actions["Escape"];
+        _move = _playerInput.actions["Move"];
+        _dash = _playerInput.actions["Dash"];
+        _escape = _playerInput.actions["Escape"];
 
-        defaultColor = playerLight.color;
-        gameObject.layer = defaultLayer;
+        _defaultColor = _playerLight.color;
+        gameObject.layer = _defaultLayer;
     }
 
 
@@ -94,123 +96,123 @@ public class PlayerScript : MonoBehaviour
 
     private void Move()
     {
-        if (isDashing) return;
+        if (_isDashing) return;
 
-        input = move.ReadValue<Vector2>();
-        moveDirection = new Vector3(input.x, 0, input.y);
+        _input = _move.ReadValue<Vector2>();
+        _moveDirection = new Vector3(_input.x, 0, _input.y);
 
-        if (moveDirection.magnitude > 0) 
+        if (_moveDirection.magnitude > 0) 
         {
-            moveDirection.Normalize();
-            controller.Move(moveDirection * moveSpeed * Time.deltaTime);
+            _moveDirection.Normalize();
+            _controller.Move(_moveDirection * _moveSpeed * Time.deltaTime);
         }
 
         // Animating
-        velocityZ = Vector3.Dot(moveDirection.normalized, transform.forward);
-        velocityX = Vector3.Dot(moveDirection.normalized, transform.right);
+        _velocityZ = Vector3.Dot(_moveDirection.normalized, _transform.forward);
+        _velocityX = Vector3.Dot(_moveDirection.normalized, _transform.right);
 
-        anim.SetFloat("Vertical", velocityZ, 0.1f, Time.deltaTime);
-        anim.SetFloat("Horizontal", velocityX, 0.1f, Time.deltaTime);
+        _anim.SetFloat("Vertical", _velocityZ, 0.1f, Time.deltaTime);
+        _anim.SetFloat("Horizontal", _velocityX, 0.1f, Time.deltaTime);
 
         // Patching height
-        if (transform.position.y == 1f) return;
+        if (_transform.position.y == 1f) return;
 
         PersistHeight();
     }
 
     private void PersistHeight()
     {
-        persistantHeight = new Vector3(transform.position.x, 1f, transform.position.z);
-        transform.position = persistantHeight;
+        _persistantHeight = new Vector3(_transform.position.x, 1f, _transform.position.z);
+        _transform.position = _persistantHeight;
     }
 
     private void Dash()
     {
-        if (isDashing) return;
+        if (_isDashing) return;
 
-        if (dash.triggered)
+        if (_dash.triggered)
         {
-            velocityZ = Vector3.Dot(moveDirection.normalized, transform.forward);
-            anim.SetTrigger("Roll");
-            anim.SetFloat("RollDirection", velocityZ);
+            _velocityZ = Vector3.Dot(_moveDirection.normalized, _transform.forward);
+            _anim.SetTrigger("Roll");
+            _anim.SetFloat("RollDirection", _velocityZ);
             StartCoroutine(StartDash());
-            StartCoroutine(cameraFX.cameraShake(0.1f, 0.04f));
+            StartCoroutine(_cameraFX.cameraShake(0.1f, 0.04f));
         }
     }
 
     private IEnumerator StartDash()
     {
         float startTime = Time.time;
-        isDashing = true;
-        gameObject.layer = transparentLayer;
+        _isDashing = true;
+        gameObject.layer = _invincibleLayer;
 
-        while (Time.time < startTime + dashTime)
+        while (Time.time < startTime + _dashTime)
         {
-            controller.Move(moveDirection.normalized * dashForce * Time.deltaTime);
+            _controller.Move(_moveDirection.normalized * _dashForce * Time.deltaTime);
             yield return null;
         }
-        isDashing = false;
-        gameObject.layer = defaultLayer;
+        _isDashing = false;
+        gameObject.layer = _defaultLayer;
     }
 
     public void TakeDamage(int dmg)
     {
-        if (health > 0)
+        if (_health > 0)
         {
             StartCoroutine(StartAlphaFlicker());
-            health -= dmg;
-            ouch.Play();
+            _health -= dmg;
+            _hitSound.Play();
         }
-        if (health <= 0)
+        if (_health <= 0)
         {
             StopAllCoroutines();
-            health = 0;
+            _health = 0;
             PlayerDied();
         }
-        StartCoroutine(cameraFX.cameraShake(0.1f, 0.1f));
+        StartCoroutine(_cameraFX.cameraShake(0.1f, 0.1f));
     }
 
     public void PlayerDied()
     {
-        var particles = Instantiate(deathFX, transform.position, Quaternion.identity);
+        var particles = Instantiate(_deathFX, _transform.position, Quaternion.identity);
         Destroy(particles.gameObject, 2);
-        Destroy(playerGFX, 0.5f);
+        Destroy(_playerGFX, 0.5f);
         
         enabled = false;
-        isPlayerAlive = false;
+        _isPlayerAlive = false;
         enabled = false;
 
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         Cursor.lockState = CursorLockMode.None;
-        menuButtonScreen.SetActive(false);
-        deathScreen.SetActive(true);
+        _pauseUI.SetActive(false);
+        _deathUI.SetActive(true);
     }
 
     private IEnumerator StartAlphaFlicker()
     {
-        gameObject.layer = transparentLayer;
+        gameObject.layer = _invincibleLayer;
         gameObject.tag = "Untagged";
         for (int i = 0; i < 3; i++)
         {
-            playerLight.color = Color.black;
+            _playerLight.color = Color.black;
             yield return new WaitForSeconds(0.2f);
-            playerLight.color = Color.red;
+            _playerLight.color = Color.red;
             yield return new WaitForSeconds(0.2f);
         }
-        playerLight.color = defaultColor;
-        gameObject.layer = defaultLayer;
+        _playerLight.color = _defaultColor;
+        gameObject.layer = _defaultLayer;
         gameObject.tag = "Player";
     }
 
     private void OpenMenuOnEscape()
     {
-        if (escape.triggered && !menuButtonScreen.activeInHierarchy && !victoryScreen.activeInHierarchy)
+        if (_escape.triggered && !_pauseUI.activeInHierarchy && !_victoryUI.activeInHierarchy)
         {
-            menuButtonScreen.SetActive(true);
+            _pauseUI.SetActive(true);
         }
-        else if (escape.triggered && menuButtonScreen.activeInHierarchy)
+        else if (_escape.triggered && _pauseUI.activeInHierarchy)
         {
-            menuButtonScreen.SetActive(false);
+            _pauseUI.SetActive(false);
         }
     }
 }

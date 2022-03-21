@@ -2,38 +2,37 @@ using UnityEngine;
 
 public class EnemyBulletScript : MonoBehaviour
 {
-    private PlayerScript player;
-    [SerializeField] private float speed = 5f;
-    [SerializeField] private float bulletForce = 100f;
-    [SerializeField] private float lifetime = 4f;
-    [SerializeField] private int damage;
-    [SerializeField] private GameObject bulletHitFX;
-    private Rigidbody _bullet;
-    private bool hasHit;
+    [SerializeField] private float _speed = 5f;
+    [SerializeField] private float _bulletForce = 100f;
+    [SerializeField] private float _lifetime = 4f;
+    [SerializeField] private int _damage;
+    [SerializeField] private GameObject _bulletHitFX;
+                     private PlayerScript _player;
+                     private Rigidbody _bulletRb;
 
     private void Awake()
     {
-        damage = Random.Range(5, 15);
+        _damage = Random.Range(5, 15);
 
-        _bullet = GetComponent<Rigidbody>();
-        Destroy(gameObject, lifetime);
+        _bulletRb = GetComponent<Rigidbody>();
+        Destroy(gameObject, _lifetime);
     }
 
     public void Initialize(PlayerScript player)
     {
-        this.player = player;
+        this._player = player;
     }
 
     private void FixedUpdate()
     {
-        _bullet.velocity = transform.forward * speed * bulletForce * Time.fixedDeltaTime;
+        _bulletRb.velocity = transform.forward * _speed * _bulletForce * Time.fixedDeltaTime;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            player.TakeDamage(damage);
+            _player.TakeDamage(_damage);
             BulletHitFX();
             Destroy(gameObject);
         }
@@ -46,7 +45,7 @@ public class EnemyBulletScript : MonoBehaviour
 
     private void BulletHitFX()
     {
-        var spawnedFX = Instantiate(bulletHitFX, transform.position, transform.rotation);
+        var spawnedFX = Instantiate(_bulletHitFX, transform.position, transform.rotation);
         Destroy(spawnedFX.gameObject, 2);
     }
 

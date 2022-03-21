@@ -15,7 +15,7 @@ public class HealthUI : MonoBehaviour
     {
         if (healthText != null)
         {
-            healthText.text = player.getHealth.ToString();
+            healthText.text = player.Health.ToString();
         }
     }
 }

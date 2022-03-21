@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class GateHandlerScript : MonoBehaviour
 {
-    [SerializeField] private GameObject firstGate;
-    [SerializeField] private GameObject secondGate;
-    [SerializeField] private EnemySpawner spawner;
-    [SerializeField] private VictoryScript victoryScript;
+    [SerializeField] private GameObject _firstGate;
+    [SerializeField] private GameObject _secondGate;
+    [SerializeField] private EnemySpawner _spawner;
+    [SerializeField] private VictoryScript _victoryScript;
 
     private void Update()
     {
-        if (spawner.Wave == 2) Destroy(firstGate);
-        if (spawner.Wave == 3) Destroy(secondGate);
-        if (spawner.Wave == 4) victoryScript.Victory();
+        if (_spawner.Wave == 2) Destroy(_firstGate);
+        if (_spawner.Wave == 3) Destroy(_secondGate);
+        if (_spawner.Wave == 4) _victoryScript.Victory();
     }
 }

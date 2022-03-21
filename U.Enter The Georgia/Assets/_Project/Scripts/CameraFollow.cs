@@ -1,21 +1,21 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
-using System.Collections;
 
 public class CameraFollow : MonoBehaviour
 {
-    [SerializeField] private PlayerScript player;
-    private Vector3 cameraOffset;
+    [SerializeField] private PlayerScript _player;
+                     private Transform _transform;
+                     private Vector3 _cameraOffset;
 
     private void Awake()
     {
-        cameraOffset = transform.position - player.transform.position;
+        _transform = transform;
+        _cameraOffset = transform.position - _player.transform.position;
     }
 
     private void LateUpdate()
     {
-        if (!player.isAlive) { return; }
+        if (!_player.IsPlayerAlive) { return; }
 
-        transform.position = player.transform.position + cameraOffset;
+        _transform.position = _player.transform.position + _cameraOffset;
     }
 }
